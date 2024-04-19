@@ -2,6 +2,7 @@ import { expect } from "@playwright/test";
 import { test } from "../fixtures";
 import { faker } from "@faker-js/faker";
 
+
 test.describe("Tasks page" ,() =>{
     let taskName: string;
 
@@ -12,9 +13,11 @@ test.describe("Tasks page" ,() =>{
     test("should create a new task with creator as the assignee",async ({page,taskPage}) =>{
         await page.goto("/");
         await taskPage.createTaskAndVerify({taskName});
-        await page.getByTestId("tasks-pending-table").getByRole("row",{name: taskName}).getByRole("checkbox").click();
+        await taskPage.markTaskAsCompletedAndVerify({taskName});
+        
         const completedTaskInDashboard = page.getByTestId("tasks-completed-table").getByRole("row",{name: taskName});
-        await completedTaskInDashboard.scrollIntoViewIfNeeded();
-        await expect(completedTaskInDashboard).toBeVisible();
+        await completedTaskInDashboard.getByTestId("completed-task-delete-link").click();
+        await expect(completedTaskInDashboard).toBeHidden();
+        await expect(page.getByTestId("tasks-pending-table").getByRole("row",{name: taskName})).toBeHidden();
     })
 })
