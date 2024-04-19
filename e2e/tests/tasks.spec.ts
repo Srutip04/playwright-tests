@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import { test } from "../fixtures";
 import { faker } from "@faker-js/faker";
 
@@ -8,14 +9,12 @@ test.describe("Tasks page" ,() =>{
         taskName = faker.word.words({count: 5});
     })
 
-    test("should create a new task with creator as the assignee",async ({loginPage,page,taskPage}) =>{
-        await page.goto("http://localhost:3000");
-        await loginPage.loginAndVerifyUser({
-            email: "oliver@example.com",
-            password: "welcome",
-            username: "Oliver",
-        })
-
+    test("should create a new task with creator as the assignee",async ({page,taskPage}) =>{
+        await page.goto("/");
         await taskPage.createTaskAndVerify({taskName});
+        await page.getByTestId("tasks-pending-table").getByRole("row",{name: taskName}).getByRole("checkbox").click();
+        const completedTaskInDashboard = page.getByTestId("tasks-completed-table").getByRole("row",{name: taskName});
+        await completedTaskInDashboard.scrollIntoViewIfNeeded();
+        await expect(completedTaskInDashboard).toBeVisible();
     })
 })
