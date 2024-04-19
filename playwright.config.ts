@@ -20,12 +20,18 @@ export default defineConfig({
     {
       name: "login",
       use: { ...devices["Desktop Chrome"] },
-      testMatch: "**/login.setup.ts", // Notice the updated spec name
+      testMatch: "**/login.setup.ts",
+    },
+    {
+      name: "teardown",
+      use: { ...devices["Desktop Chrome"] },
+      testMatch: "**/global.teardown.ts",
     },
     {
       name: "Logged In tests",
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       dependencies: ["login"],
+      teardown: "teardown",
       testMatch: "**/*.spec.ts",
       testIgnore: "**/register.spec.ts",
     },
