@@ -3,6 +3,7 @@
 import { test } from "../fixtures";
 import { expect } from "@playwright/test";
 import { faker } from "@faker-js/faker";
+import LoginPage from "../poms/login";
 
 test.describe("Tasks page", () => {
   let taskName: string;
@@ -51,24 +52,31 @@ test.describe("Tasks page", () => {
     ).toBeHidden();
   });
 
-  test("should be able to star a pending task", async ({ page, taskPage }) => {
-    page.goto("/");
-    await taskPage.createTaskAndVerify({ taskName });
-    await taskPage.starTaskAndVerify({ taskName });
-  });
+  test.describe("Starring tasks feature", () => {
+    test.describe.configure({ mode: "serial" });
 
-  test("should be able to un-star a pending task", async ({
-    page,
-    taskPage,
-  }) => {
-    page.goto("/");
-    await taskPage.createTaskAndVerify({ taskName });
-    await taskPage.starTaskAndVerify({ taskName });
-    const starIcon = page
-      .getByTestId("tasks-pending-table")
-      .getByRole("row", { name: taskName })
-      .getByTestId("pending-task-star-or-unstar-link");
-    await starIcon.click();
-    await expect(starIcon).toHaveClass(/ri-star-line/);
+    test("should be able to star a pending task", async ({
+      page,
+      taskPage,
+    }) => {
+      page.goto("/");
+      await taskPage.createTaskAndVerify({ taskName });
+      await taskPage.starTaskAndVerify({ taskName });
+    });
+
+    test("should be able to un-star a pending task", async ({
+      page,
+      taskPage,
+    }) => {
+      page.goto("/");
+      await taskPage.createTaskAndVerify({ taskName });
+      await taskPage.starTaskAndVerify({ taskName });
+      const starIcon = page
+        .getByTestId("tasks-pending-table")
+        .getByRole("row", { name: taskName })
+        .getByTestId("pending-task-star-or-unstar-link");
+      await starIcon.click();
+      await expect(starIcon).toHaveClass(/ri-star-line/);
+    });
   });
 });
