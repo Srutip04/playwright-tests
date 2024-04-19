@@ -79,4 +79,37 @@ test.describe("Tasks page", () => {
       await expect(starIcon).toHaveClass(/ri-star-line/);
     });
   });
+
+  test("should create a new task with a different user as the assignee", async ({
+    page,
+    browser,
+    taskPage,
+  }) => {
+    await page.goto("/");
+    await taskPage.createTaskAndVerify({ taskName, userName: "Shruti" });
+
+    // Creating a new browser context and a page in the browser without restoring the session
+    const newUserContext = await browser.newContext({
+      storageState: { cookies: [], origins: [] },
+    });
+    const newUserPage = await newUserContext.newPage();
+
+    // Initializing the login POM here because the fixture is configured to use the default page context
+    const loginPage = new LoginPage(newUserPage);
+
+    await newUserPage.goto("/");
+    await loginPage.loginAndVerifyUser({
+      email: "s@example.com",
+      password: "welcome",
+      username: "Shruti",
+    });
+    await expect(
+      newUserPage
+        .getByTestId("tasks-pending-table")
+        .getByRole("row", { name: taskName })
+    ).toBeVisible();
+
+    await newUserPage.close();
+    await newUserContext.close();
+  });
 });
