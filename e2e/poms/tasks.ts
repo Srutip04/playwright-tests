@@ -61,5 +61,12 @@ export class TaskPage {
     ).toContainText(taskName);
   };
 
-  
+  checkCommentCount = async ({ taskName }: { taskName: string }) => {
+    await expect(this.page
+      .getByTestId("tasks-pending-table")
+      .getByRole("row", { name: taskName })
+      .getByRole('cell', { name: '1' }))
+      .toContainText("1")
+    
+  }
 }
