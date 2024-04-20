@@ -5,6 +5,7 @@ import { expect } from "@playwright/test";
 import { faker } from "@faker-js/faker";
 import LoginPage from "../poms/login";
 
+
 test.describe("Tasks page", () => {
   let taskName: string;
 
@@ -78,6 +79,8 @@ test.describe("Tasks page", () => {
       await starIcon.click();
       await expect(starIcon).toHaveClass(/ri-star-line/);
     });
+
+    
   });
 
   test("should create a new task with a different user as the assignee", async ({
@@ -112,4 +115,5 @@ test.describe("Tasks page", () => {
     await newUserPage.close();
     await newUserContext.close();
   });
+  
 });
